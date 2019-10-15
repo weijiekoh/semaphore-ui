@@ -1,0 +1,22 @@
+{
+  "name": "semaphore-ui",
+  "version": "0.0.1",
+  "description": "A demo UI for Semaphore, a zero-knowledge signalling gadget",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weijiekoh/semaphore-ui.git"
+  },
+  "author": "Koh Wei Jie",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/weijiekoh/semaphore-ui/issues"
+  },
+  "homepage": "https://github.com/weijiekoh/semaphore-ui#readme",
+  "dependencies": {
+    "libsemaphore": "0.0.10"
+  }
+}
