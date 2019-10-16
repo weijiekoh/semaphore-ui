@@ -1,0 +1,33 @@
+{
+  "name": "semaphore-ui",
+  "version": "0.0.1",
+  "description": "A demo UI for Semaphore, a zero-knowledge signalling gadget",
+  "main": "build/index.js",
+  "scripts": {
+    "watch": "tsc --watch",
+    "build": "tsc",
+    "webpack-watch": "webpack --watch --config webpack.config.dev.js",
+    "webpack-build": "webpack --config webpack.config.prod.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weijiekoh/semaphore-ui.git"
+  },
+  "author": "Koh Wei Jie",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/weijiekoh/semaphore-ui/issues"
+  },
+  "homepage": "https://github.com/weijiekoh/semaphore-ui#readme",
+  "dependencies": {
+    "libsemaphore": "0.0.10",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  }
+}

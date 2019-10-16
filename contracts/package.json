@@ -1,0 +1,25 @@
+{
+    "name": "su-contracts",
+    "version": "1.0.0",
+    "description": "",
+    "main": "build/index.js",
+    "scripts": {
+        "watch": "tsc --watch",
+        "ganache": "./scripts/runGanache.sh",
+        "compileABIs": "node build/compileAndDeploy.js -s ~/solc-0.5.11 -o ./abi -i ./sol/ --abi-only",
+        "compileAndDeploy": "node build/compileAndDeploy.js -s ~/solc-0.5.11 -o ./abi -i ./sol/",
+        "compileAndDeployProd": "node build/compileAndDeploy.js -s ~/solc-0.5.11 -o ./abi -i ./sol/ -m",
+        "build": "tsc"
+    },
+    "author": "Koh Wei Jie",
+    "dependencies": {
+        "su-config": "1.0.0",
+        "ethers": "4.0.37",
+        "ganache-cli": "^6.7.0"
+    },
+    "devDependencies": {
+        "@types/node": "^12.7.7",
+        "argparse": "1.0.10",
+        "shelljs": "0.8.3"
+    }
+}
