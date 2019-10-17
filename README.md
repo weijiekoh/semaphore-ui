@@ -23,6 +23,13 @@ It exposes the following features:
    zk-SNARK proof and selecting an external nullifier which the signal will be
    for.
 
+## Example
+
+This [broadcast
+transaction](https://kovan.etherscan.io/tx/0x50aef915da2f84164888d1b6c3501bdacb7e9344e46b5d04183114f91b29cccb)
+that broadcasted the string 'Hello, world' shows `48656c6c6f2c20776f726c6421`
+at the end of the transaction data, which is hexadecimal for said string.
+
 ## Local development and testing
 
 These instructions have been tested with Ubuntu 18.0.4 and Node 11.14.0.

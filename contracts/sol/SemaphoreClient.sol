@@ -22,25 +22,25 @@ contract SemaphoreClient {
     }
     /*
      * @param _signal The signal to broadcast
-     * @param a The pi_a zk-SNARK proof data
-     * @param b The pi_b zk-SNARK proof data
-     * @param c The pi_c zk-SNARK proof data
-     * @param input The public signals to the zk-SNARK proof.
+     * @param _a The pi_a zk-SNARK proof data
+     * @param _b The pi_b zk-SNARK proof data
+     * @param _c The pi_c zk-SNARK proof data
+     * @param _input The public signals to the zk-SNARK proof.
      * Allows a registered user to anonymously broadcast a signal.
      */
     function broadcastSignal(
-        bytes32 _signal,
-        uint[2] memory a,
-        uint[2][2] memory b,
-        uint[2] memory c,
-        uint[4] memory input // (root, nullifiers_hash, signal_hash, external_nullifier)
+        bytes memory _signal,
+        uint[2] memory _a,
+        uint[2][2] memory _b,
+        uint[2] memory _c,
+        uint[4] memory _input // (root, nullifiers_hash, signal_hash, external_nullifier)
     ) public {
         semaphore.broadcastSignal(
-            abi.encode(_signal),
-            a,
-            b,
-            c,
-            input
+            _signal,
+            _a,
+            _b,
+            _c,
+            _input
         );
     }
 
