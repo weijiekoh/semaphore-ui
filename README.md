@@ -17,11 +17,29 @@ It exposes the following features:
 
 3. Download leaves from a Semaphore contract deployed on the Kovan testnet
 
-4. Add or remove an external nullifier to the Semaphore contract
+4. Add an external nullifier to the Semaphore contract
 
 5. Broadcast a signal to the Semaphore contract; this involves generating a
    zk-SNARK proof and selecting an external nullifier which the signal will be
    for.
+
+The [`SemaphoreClient.sol`](./contracts/sol/SemaphoreClient.sol) contract is a
+simple interface to the following
+[Semaphore.sol](./semaphore/semaphorejs/contracts/Semaphore.sol) functions:
+
+- `insertIdentity`
+- `addExternalNullifier`
+- `broadcastSignal`
+
+In this implementation of a Semaphore client, the deployment script deploys a
+Semaphore contract and a SemaphoreClient contract, and sets the address of the
+latter as the owner of the former. This allows anyone to bypass Semaphore's
+`onlyOwner` guards in some of its functions. A mixer, for instance, would
+require a deposit to be paid before invoking `insertIdentity`.
+
+The frontend is built using React. Webpack is configured to use Terser to
+compress **but not mangle** the Javascript source code, and thereby prevent
+errors during witness generation.
 
 ## Example
 
@@ -39,10 +57,6 @@ These instructions have been tested with Ubuntu 18.0.4 and Node 11.14.0.
 - Node v11.14.0.
       - We recommend [`nvm`](https://github.com/nvm-sh/nvm) to manage your Node
         installation.
-
-- [`etcd`](https://github.com/etcd-io/etcd) v3.3.13
-    - The relayer server requires an `etcd` server to lock the account nonce of
-      its hot wallet.
 
 ### Local development
 
@@ -91,11 +105,11 @@ your home directory named `SU_TESTNET_DEPLOY_KEY` containing the following strin
 0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
 ```
 
-**Note:** do not store any mainnet funds in the account assoiciated with this
+**Note:** do not store any mainnet funds in the account associated with this
 address or they will be swept away.
 
 Staying inside the `contracts` directory, compile and deploy the contracts. You
-need the `solc` 0.5.11 binary somewhere in your filesystem.
+need an [`solc`](https://github.com/ethereum/solidity) 0.5.X binary somewhere in your filesystem.
 
 ```bash
 node build/compileAndDeploy.js -s /path/to/solc -o ./abi -i ./sol/
@@ -132,16 +146,22 @@ account with some Kovan ETH:
 0x................................................................
 ```
 
+Next, rebuild the source using the `kovan` NODE_ENV variable, which will make the `config` submodule select the `kovan.yaml` config file:
+
+```
+# in the base directory
+NODE_ENV=kovan npm run build
+```
+
 Next, deploy the contracts:
 
 ```bash
-# in contracts/
-
+cd contracts/
 NODE_ENV=kovan npm run compileAndDeploy
 ```
 
-Next, replace deployed contract addresses to `config/kovan.yaml`, and finally
-rebuild the frontend:
+Next, replace deployed contract addresses to `config/kovan.yaml`, and rebuild
+the frontend:
 
 ```
 # in the base directory
