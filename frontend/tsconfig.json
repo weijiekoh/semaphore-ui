@@ -1,6 +1,8 @@
 {
     "extends": "../tsconfig.json",
     "compilerOptions": {
+        "skipLibCheck": true,
+        "esModuleInterop": true,
         "outDir": "./build",
         "jsx": "react",
         "lib": [ "es2015", "dom" ]
@@ -9,6 +11,7 @@
         "./ts"
     ],
     "exclude": [
-        "*/dist/*"
+        "*/dist/*",
+        "node_modules/*"
     ]
 }

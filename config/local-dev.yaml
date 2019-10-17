@@ -8,14 +8,17 @@ frontend:
 
 snarkUrls:
   circuit: "http://localhost:8000/build/circuit.json"
-  provingKey: "http://localhost:8000/build/proving_key.json"
+  provingKey: "http://localhost:8000/build/proving_key.bin"
 
 chain:
   url: "http://localhost:8545"
   chainId: 1234
+  fundForTesting:
+    - '0x5CbDd86a2FA8Dc4bDdd8a8f69dBa48572EeC07FB'
+    - '0x7564105E977516C53bE337314c7E53838967bDaC'
   semaphoreTreeDepth: 12 
   deployKeyPath: '/home/di/SU_TESTNET_DEPLOY_KEY'
   contracts:
-    MiMC: ""
-    Semaphore: ""
-    NFT: ""
+    MiMC: "0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0"
+    Semaphore: "0xF12b5dd4EAD5F743C6BaA640B0216200e89B60Da"
+    SemaphoreClient: "0x345cA3e014Aaf5dcA488057592ee47305D9B3e10"

@@ -56,11 +56,9 @@ const compileAbis = async (
 
     // Copy ABIs to the frontend and backend modules
     shell.mkdir('-p', '../frontend/abi/')
-    shell.mkdir('-p', '../backend/abi/')
 
     shell.ls(path.join(abiDir, '*.abi')).forEach((file) => {
         const baseName = path.basename(file)
-        shell.cp('-R', file, `../backend/abi/${baseName}.json`)
         shell.cp('-R', file, `../frontend/abi/${baseName}.json`)
     })
 }
@@ -71,7 +69,6 @@ const compileAndDeploy = async (
     solcBinaryPath: string = 'solc',
     rpcUrl: string = config.chain.url,
     deployKeyPath: string = config.chain.keys.deployPath,
-    nftAddress?: string,
 ) => {
 
     const readAbiAndBin = (name: string) => {
@@ -123,21 +120,6 @@ const compileAndDeploy = async (
         execute(linkCmd)
     }
 
-    // deploy or connect to the POAP contract
-    const nftAbi = readFile(abiDir, 'Poap.abi')
-    let nftContract
-
-    if (nftAddress) {
-        nftContract = new ethers.Contract(nftAddress, nftAbi, provider)
-        console.log('Using existing NFT at', nftContract.address)
-    } else {
-        const nftBin = readFile(abiDir, 'Poap.bin')
-        const nftContractFactory = new ethers.ContractFactory(nftAbi, nftBin, wallet)
-        nftContract = await nftContractFactory.deploy()
-        await nftContract.deployed()
-        console.log('Deployed NFT at', nftContract.address)
-    }
-
     // deploy Semaphore
     const semaphoreAB = readAbiAndBin('Semaphore')
     const semaphoreContractFactory = new ethers.ContractFactory(semaphoreAB.abi, semaphoreAB.bin, wallet)
@@ -149,43 +131,31 @@ const compileAndDeploy = async (
 
     console.log('Deployed Semaphore at', semaphoreContract.address)
 
-    // deploy OneOfUs
-    const oouAB = readAbiAndBin('OneOfUs')
-    const oouContractFactory = new ethers.ContractFactory(oouAB.abi, oouAB.bin, wallet)
-    const oouContract = await oouContractFactory.deploy(
-        nftContract.address,
+    // deploy SemaphoreClient
+    const scAB = readAbiAndBin('SemaphoreClient')
+    const scContractFactory = new ethers.ContractFactory(scAB.abi, scAB.bin, wallet)
+    const scContract = await scContractFactory.deploy(
         semaphoreContract.address,
-        config.chain.poapEventId,
         {gasPrice: ethers.utils.parseUnits('10', 'gwei')},
     )
-    await oouContract.deployed()
-    console.log('Deployed OneOfUs at', oouContract.address)
+    await scContract.deployed()
+    console.log('Deployed SemaphoreClient at', scContract.address)
 
-    // set the owner of the Semaphore contract to the OneOfUs contract address
-    const tx = await semaphoreContract.transferOwnership(oouContract.address)
+    // set the owner of the Semaphore contract to the SemaphoreClient contract address
+    const tx = await semaphoreContract.transferOwnership(scContract.address)
     await tx.wait()
     console.log('Transferred ownership of the Semaphore contract')
 
-    if (config.chain.fundAndMintForTesting) {
+    if (config.chain.fundForTesting) {
         let i = 0
 
-        for (let address of config.chain.fundAndMintForTesting) {
+        for (let address of config.chain.fundForTesting) {
             let tx
-
-            const id = Date.now() + i
-
-            tx = await nftContract.mintToken(
-                config.chain.poapEventId,
-                id,
-                address,
-            )
-            await tx.wait()
-            console.log('Minted tokens to', address, 'with token ID', id)
 
             tx = await wallet.provider.sendTransaction(
                 wallet.sign({
                     nonce: await wallet.provider.getTransactionCount(wallet.address),
-                    gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+                    gasPrice: ethers.utils.parseUnits('10', 'gwei'),
                     gasLimit: 21000,
                     to: address,
                     value: ethers.utils.parseEther('1'),
@@ -202,8 +172,7 @@ const compileAndDeploy = async (
 	return {
 		MiMC: mimcContract,
 		Semaphore: semaphoreContract,
-		NFT: nftContract,
-        OneOfUs: oouContract,
+        SemaphoreClient: scContract,
 	}
 }
 
@@ -254,14 +223,6 @@ if (require.main === module) {
     )
 
     parser.addArgument(
-        ['-m', '--mainnet'],
-        {
-            help: 'Use the NFT contract address configured at config.chain.nftAddress',
-            action: 'storeTrue',
-        }
-    )
-
-    parser.addArgument(
         ['-a', '--abi-only'],
         {
             help: 'Only generate ABI files',
@@ -281,9 +242,8 @@ if (require.main === module) {
     } else {
         const deployKeyPath = args.privKey ? args.privKey : config.chain.deployKeyPath
         const rpcUrl = args.rpcUrl ? args.rpcUrl : config.chain.url
-        const nftAddress = args.mainnet ? config.chain.nftAddress : null
 
-        compileAndDeploy(abiDir, solDir, solcBinaryPath, rpcUrl, deployKeyPath, nftAddress)
+        compileAndDeploy(abiDir, solDir, solcBinaryPath, rpcUrl, deployKeyPath)
     }
 }
 

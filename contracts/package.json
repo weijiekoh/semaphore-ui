@@ -15,6 +15,7 @@
     "dependencies": {
         "su-config": "1.0.0",
         "ethers": "4.0.37",
+        "circomlib": "0.0.19",
         "ganache-cli": "^6.7.0"
     },
     "devDependencies": {

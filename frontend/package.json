@@ -6,8 +6,8 @@
   "scripts": {
     "watch": "tsc --watch",
     "build": "tsc",
-    "webpack-watch": "webpack --watch --config webpack.config.dev.js",
-    "webpack-build": "webpack --config webpack.config.prod.js"
+    "webpack-watch": "webpack-dev-server",
+    "webpack-build": "NODE_ENV=production webpack"
   },
   "repository": {
     "type": "git",
@@ -20,14 +20,24 @@
   },
   "homepage": "https://github.com/weijiekoh/semaphore-ui#readme",
   "dependencies": {
-    "libsemaphore": "0.0.10",
+    "bulma": "^0.7.5",
+    "libsemaphore": "^0.0.13",
     "react": "^16.10.2",
-    "react-dom": "^16.10.2"
+    "react-dom": "^16.10.2",
+    "wasmbuilder": "0.0.8",
+    "web3-react": "^5.0.4"
   },
   "devDependencies": {
+    "css-loader": "^3.2.0",
     "html-webpack-plugin": "^3.2.0",
+    "less": "^3.10.3",
+    "less-loader": "^5.0.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "style-loader": "^1.0.0",
     "typescript": "^3.6.4",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9"
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2"
   }
 }

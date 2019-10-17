@@ -1,0 +1,3 @@
+[submodule "semaphore"]
+	path = semaphore
+	url = https://github.com/kobigurk/semaphore.git
