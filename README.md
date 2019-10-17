@@ -4,11 +4,13 @@ This is a user interface which demonstrates the features of
 [Semaphore](https://github.com/kobigurk/semaphore), a zero-knowledge signalling
 gadget.
 
+More information about Semaphore can be found [here](https://medium.com/coinmonks/to-mixers-and-beyond-presenting-semaphore-a-privacy-gadget-built-on-ethereum-4c8b00857c9b).
+
 This UI uses [`libsemaphore`](https://github.com/weijiekoh/libsemaphore), a
 library which provides cruical cryptographic helper functions to Semaphore
 clients, such as mixers or anonymous voting apps.
 
-It exposes the following features:
+It provides following features:
 
 1. Generate an `Identity` (comprised of an EdDSA keypair, identity nullifier,
    and idenitty trapdoor)
