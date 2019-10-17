@@ -1,6 +1,5 @@
 ---
 env: 'local-dev'
-solcBinaryPath: '/usr/bin/solc'
 
 frontend:
   supportedNetworkName: 'the local testnet'

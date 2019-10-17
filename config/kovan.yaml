@@ -1,6 +1,5 @@
 ---
 env: 'kovan'
-solcBinaryPath: '/usr/bin/solc'
 
 frontend:
   supportedNetworkName: 'the Kovan testnet'

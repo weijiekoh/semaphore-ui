@@ -244,6 +244,7 @@ if (require.main === module) {
         const rpcUrl = args.rpcUrl ? args.rpcUrl : config.chain.url
 
         compileAndDeploy(abiDir, solDir, solcBinaryPath, rpcUrl, deployKeyPath)
+        compileAbis(abiDir, solDir)
     }
 }
 

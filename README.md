@@ -69,3 +69,84 @@ discarded.
 ./scripts/downloadSnarks.sh
 ```
 
+Install all dependencies and build the source code:
+
+```bash
+npm i &&
+npm run bootstrap &&
+npm run build
+```
+
+In a separate terminal, navigate to `contracts` and launch Ganache:
+
+```bash
+cd contracts
+npm run ganache
+```
+
+To deploy the contracts to the Ganache testnet
+your home directory named `SU_TESTNET_DEPLOY_KEY` containing the following string:
+
+```
+0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
+```
+
+**Note:** do not store any mainnet funds in the account assoiciated with this
+address or they will be swept away.
+
+Staying inside the `contracts` directory, compile and deploy the contracts. You
+need the `solc` 0.5.11 binary somewhere in your filesystem.
+
+```bash
+node build/compileAndDeploy.js -s /path/to/solc -o ./abi -i ./sol/
+```
+
+Next navigate to the `frontend` directory and rebuild the source:
+
+```bash
+cd ../frontend
+npm run build
+```
+
+To launch a hot-reload development server, run:
+
+```bash
+npm run webpack-watch
+```
+
+To build a production frontend for the local testnet, run:
+
+```bash
+# start from the base semaphore-ui/ directory
+
+npm run build && cd frontend && npm run webpack-build
+```
+
+## Production
+
+To deploy the contracts to the Kovan testnet, first create a file in your home
+directory named `SU_KOVAN_DEPLOY_KEY` containing the private key of an Ethereum
+account with some Kovan ETH:
+
+```
+0x................................................................
+```
+
+Next, deploy the contracts:
+
+```bash
+# in contracts/
+
+NODE_ENV=kovan npm run compileAndDeploy
+```
+
+Next, replace deployed contract addresses to `config/kovan.yaml`, and finally
+rebuild the frontend:
+
+```
+# in the base directory
+NODE_ENV=kovan npm run build && cd frontend && npm run webpack-build
+```
+
+If you receive a 401 error, replace the Kovan node URL in `config/kovan.yaml`
+with a functioning one.
