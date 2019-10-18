@@ -140,6 +140,20 @@ To launch a hot-reload development server, run:
 npm run webpack-watch
 ```
 
+This local server is configured to retrieve the circuit and proving key from
+`http://localhost:8000`. To run a local file server, install `http-server`:
+
+```bash
+npm i -g http-server
+```
+
+Launch the server:
+
+```
+# in the base directory
+./scripts/serveSnarks.sh
+```
+
 To build a production frontend for the local testnet, run:
 
 ```bash

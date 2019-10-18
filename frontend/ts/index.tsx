@@ -176,6 +176,7 @@ const App = () => {
     }
 
     const renderExternalNullifiers = () => {
+        const en = externalNullifiers[selectedExternalNullifierIndex]
         return (
             <div className='control'>
                 {
@@ -265,6 +266,8 @@ const App = () => {
                         <label>Your identity (saved in localStorage):</label>
                     </p>
 
+                    <br />
+
                     <textarea className='identityTextarea' value={serialisedIdentity} readOnly={true} />
 
                     <br />
@@ -275,6 +278,7 @@ const App = () => {
                             Register
                         </button>
                     }
+                    <br />
 
                     { hasCheckedRegistration && hasRegistered && 
                         <button className='button is-warning' onClick={handleReplaceBtnClick}>
@@ -301,6 +305,8 @@ const App = () => {
                         Add a new external nullifier (the last 29 bytes of the
                         Keccak256 hash of what you type will be used):
                     </p>
+
+                    <br />
 
                     <input id='newExternalNullifier' type='text' className='input' 
                         placeholder='Plaintext' />
@@ -333,6 +339,17 @@ const App = () => {
                     <h2 className='subtitle'>
                         Broadcast a signal
                     </h2>
+
+                    {externalNullifiers.length > 0 &&
+                        <div>
+                            <p>
+                                Broadcasting to external nullifier {'0x'
+                                        + externalNullifiers[selectedExternalNullifierIndex].toString(16).slice(0, 8)}…. This 
+                                can only happen once per registered identity.
+                            </p>
+                            <br />
+                        </div>
+                    }
 
                     {proofStatus.length > 0 &&
                         <div>
