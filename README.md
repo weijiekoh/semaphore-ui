@@ -4,7 +4,8 @@ This is a user interface which demonstrates the features of
 [Semaphore](https://github.com/kobigurk/semaphore), a zero-knowledge signalling
 gadget.
 
-More information about Semaphore can be found [here](https://medium.com/coinmonks/to-mixers-and-beyond-presenting-semaphore-a-privacy-gadget-built-on-ethereum-4c8b00857c9b).
+More information about Semaphore can be found
+[here](https://medium.com/coinmonks/to-mixers-and-beyond-presenting-semaphore-a-privacy-gadget-built-on-ethereum-4c8b00857c9b).
 
 This UI uses [`libsemaphore`](https://github.com/weijiekoh/libsemaphore), a
 library which provides cruical cryptographic helper functions to Semaphore
@@ -25,13 +26,21 @@ It provides following features:
    zk-SNARK proof and selecting an external nullifier which the signal will be
    for.
 
-The [`SemaphoreClient.sol`](./contracts/sol/SemaphoreClient.sol) contract is a
-simple interface to the following
-[Semaphore.sol](./semaphore/semaphorejs/contracts/Semaphore.sol) functions:
+The [Semaphore.sol](./semaphore/semaphorejs/contracts/Semaphore.sol)
+contract deployed at
+[`0x3a2CeFF007fE5D734529fa7eecdee5877F32b486`](https://kovan.etherscan.io/address/0x3a2CeFF007fE5D734529fa7eecdee5877F32b486)
+supports `2 ** 12 = 4096` identitity registrations. To support a larger number,
+you have to use a different `circuit.json`, `proving_key.bin`, and
+`verifier.sol`.
 
-- `insertIdentity`
-- `addExternalNullifier`
-- `broadcastSignal`
+The [`SemaphoreClient.sol`](./contracts/sol/SemaphoreClient.sol) contract, deployed at 
+[`0x7d2000244d38b7E293Ef43b1ccFBD140fA5d904b`](https://kovan.etherscan.io/address/0x7d2000244d38b7E293Ef43b1ccFBD140fA5d904b)
+is a simple interface to the following
+Semaphore contract functions:
+
+- `insertIdentity`: register an *identity commitment*
+- `addExternalNullifier`: add an external nullifier to the Semaphore contract
+- `broadcastSignal`: broadcast an arbitary string in zero-knowledge
 
 In this implementation of a Semaphore client, the deployment script deploys a
 Semaphore contract and a SemaphoreClient contract, and sets the address of the
@@ -39,9 +48,10 @@ latter as the owner of the former. This allows anyone to bypass Semaphore's
 `onlyOwner` guards in some of its functions. A mixer, for instance, would
 require a deposit to be paid before invoking `insertIdentity`.
 
-The frontend is built using React. Webpack is configured to use Terser to
-compress **but not mangle** the Javascript source code, and thereby prevent
-errors during witness generation.
+The frontend is built using React. Webpack is
+[configured](./frontend/webpack.config.js) to use Terser to compress **but not
+mangle** the Javascript source code, and thereby prevent errors during witness
+generation.
 
 ## Example
 
