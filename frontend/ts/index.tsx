@@ -19,6 +19,7 @@ import {
 } from './web3/contracts'
 
 import {
+    Identity,
     genIdentity,
     genIdentityCommitment,
     genCircuit,
@@ -59,8 +60,8 @@ const App = () => {
 
     const context = useWeb3Context()
 
-    let identity
-    let serialisedIdentity
+    let identity: Identity
+    let serialisedIdentity: string
 
     if (hasId()) {
         identity = retrieveId()
@@ -231,6 +232,12 @@ const App = () => {
         getContractData()
     }
 
+    let selectedEnToDisplay
+
+    if (externalNullifiers.length > 0) {
+        selectedEnToDisplay = externalNullifiers[selectedExternalNullifierIndex].toHexString().slice(0, 8)
+    }
+
     return (
         <div className='section'>
             <div className='container' style={{textAlign: 'right'}}>
@@ -343,8 +350,7 @@ const App = () => {
                     {externalNullifiers.length > 0 &&
                         <div>
                             <p>
-                                Broadcasting to external nullifier {'0x'
-                                        + externalNullifiers[selectedExternalNullifierIndex].toString(16).slice(0, 8)}…. This 
+                                Broadcasting to external nullifier {selectedEnToDisplay}…. This 
                                 can only happen once per registered identity.
                             </p>
                             <br />
