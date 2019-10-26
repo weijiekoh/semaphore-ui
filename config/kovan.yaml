@@ -15,6 +15,6 @@ chain:
   semaphoreTreeDepth: 12 
   deployKeyPath: '/home/di/SU_KOVAN_DEPLOY_KEY'
   contracts:
-    MiMC: "0xeDB66B72C63A43F6676AD9Ac962598c9C5F259B6"
-    Semaphore: "0x3a2CeFF007fE5D734529fa7eecdee5877F32b486"
-    SemaphoreClient: "0x7d2000244d38b7E293Ef43b1ccFBD140fA5d904b"
+    MiMC: "0x1AB6e2B57C2B732A35D4566acbD1E2DcB331F415"
+    Semaphore: "0xD4f3712EC711ab9d4e3E1D6181dED12349Fe68d9"
+    SemaphoreClient: "0x891B4e5C7ba61A44e0cd0D51D62b12D65f42b287"

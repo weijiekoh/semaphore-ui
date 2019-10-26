@@ -57,6 +57,7 @@ const App = () => {
     const [newExternalNullifier, setNewExternalNullifier] = useState('')
     const [hasRegistered, setHasRegistered] = useState(false)
     const [externalNullifiers, setExternalNullifiers] = useState<any[]>([])
+    const [signalHistory, setSignalHistory] = useState<any[]>([])
 
     const context = useWeb3Context()
 
@@ -88,6 +89,17 @@ const App = () => {
             const ens = await semaphoreClientContract.getExternalNullifiers()
             setExternalNullifiers(ens)
         }
+
+        let signals: any[] = []
+        const current_signal_index = (await semaphoreContract.current_signal_index()).toNumber()
+
+        for (let i=0; i < current_signal_index; i++) {
+            const signal = await semaphoreContract.signals(i)
+            const en = await semaphoreContract.getExternalNullifierBySignalIndex(i)
+
+            signals.push({ signal, en })
+        }
+        setSignalHistory(signals)
     }
 
     const handleRegisterBtnClick = async () => {
@@ -228,6 +240,29 @@ const App = () => {
         }
     }
 
+    const renderSignalHistory = () => {
+        return (
+            <table className='table'>
+                <thead>
+                    <tr>
+                        <td>Signal</td>
+                        <td>External nullifier</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    { signalHistory.map((x, i) => {
+                        return (
+                            <tr key={i}>
+                                <td>{x.en.toHexString()}</td>
+                                <td>{ethers.utils.toUtf8String(x.signal)}</td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+        )
+    }
+
     if (context.active) {
         getContractData()
     }
@@ -343,9 +378,7 @@ const App = () => {
             <div className='columns'>
 
                 <div className='column is-12-mobile is-8-desktop is-offset-2-desktop'>
-                    <h2 className='subtitle'>
-                        Broadcast a signal
-                    </h2>
+                    <h2 className='subtitle'>Broadcast a signal</h2>
 
                     {externalNullifiers.length > 0 &&
                         <div>
@@ -380,6 +413,13 @@ const App = () => {
 
             </div>
             }
+
+            <div className='columns'>
+                <div className='column is-12-mobile is-8-desktop is-offset-2-desktop'>
+                    <h2 className='subtitle'>Signal history</h2>
+                    { renderSignalHistory() }
+                </div>
+            </div>
         </div>
     )
 }
