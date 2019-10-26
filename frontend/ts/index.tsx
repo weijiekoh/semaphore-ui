@@ -245,8 +245,8 @@ const App = () => {
             <table className='table'>
                 <thead>
                     <tr>
-                        <td>Signal</td>
                         <td>External nullifier</td>
+                        <td>Signal</td>
                     </tr>
                 </thead>
                 <tbody>
