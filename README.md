@@ -81,8 +81,8 @@ npm install -g npx http-server
 Clone this repository and its `semaphore` submodule:
 
 ```bash
-git clone git@github.com:weijiekoh/mixer.git && \
-cd mixer && \
+git clone git@github.com:weijiekoh/semaphore-ui.git && \
+cd semaphore-ui && \
 git submodule update --init
 ```
 
