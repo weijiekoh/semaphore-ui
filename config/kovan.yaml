@@ -6,15 +6,15 @@ frontend:
   supportedNetwork: 42
 
 snarkUrls:
-  circuit: "https://oneofus.blob.core.windows.net/snarks/circuit.json"
-  provingKey: "https://oneofus.blob.core.windows.net/snarks/proving_key.bin"
+  circuit: "https://semaphoreui.blob.core.windows.net/snarks/circuit.json"
+  provingKey: "https://semaphoreui.blob.core.windows.net/snarks/proving_key.bin"
 
 chain:
   url: "https://kovan.infura.io/v3/5d37c494621a43558d77c90e368d4022"
   chainId: 42
-  semaphoreTreeDepth: 12 
+  semaphoreTreeDepth: 20 
   deployKeyPath: '/home/di/SU_KOVAN_DEPLOY_KEY'
   contracts:
-    MiMC: "0x1AB6e2B57C2B732A35D4566acbD1E2DcB331F415"
-    Semaphore: "0xD4f3712EC711ab9d4e3E1D6181dED12349Fe68d9"
-    SemaphoreClient: "0x891B4e5C7ba61A44e0cd0D51D62b12D65f42b287"
+    MiMC: "0x64FD7BfC115755408614337c9DA07ec189BD22eA"
+    Semaphore: "0x68009F6f3Ac77A1403cf2aF0ce48Aed70e581876"
+    SemaphoreClient: "0x578fAa3deaa040f0Bb33E61fd017B43f1fAc317C"

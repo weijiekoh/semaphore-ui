@@ -21,7 +21,7 @@
   "homepage": "https://github.com/weijiekoh/semaphore-ui#readme",
   "dependencies": {
     "bulma": "^0.7.5",
-    "libsemaphore": "^0.0.14",
+    "libsemaphore": "^1.0.14",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "wasmbuilder": "0.0.8",

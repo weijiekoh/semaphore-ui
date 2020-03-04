@@ -28,7 +28,7 @@ import {
     genExternalNullifier,
     genProof,
     genPublicSignals,
-    formatForVerifierContract,
+    genBroadcastSignalParams,
 } from 'libsemaphore'
 const config = require('../exported_config.json')
 
@@ -73,12 +73,27 @@ const App = () => {
     serialisedIdentity = serialiseIdentity(identity)
     let identityCommitment = genIdentityCommitment(identity)
 
+    const getExternalNullifiers = async (semaphoreContract) => {
+        const firstEn = await semaphoreContract.firstExternalNullifier()
+        const lastEn = await semaphoreContract.lastExternalNullifier()
+
+        const ens: BigInt[] = [ firstEn ]
+        let currentEn = firstEn
+
+        while (currentEn.toString() !== lastEn.toString()) {
+            currentEn = await semaphoreContract.getNextExternalNullifier(currentEn)
+            ens.push(currentEn)
+        }
+
+        return ens
+    }
+
     const getContractData = async () => {
         const semaphoreContract = await getSemaphoreContract(context)
         const semaphoreClientContract = await getSemaphoreClientContract(context)
 
         if (!hasCheckedRegistration) {
-            const leaves = await semaphoreClientContract.getLeaves()
+            const leaves = await semaphoreClientContract.getIdentityCommitments()
             if (leaves.map((x) => x.toString()).indexOf(identityCommitment.toString()) > -1) {
                 setHasRegistered(true)
                 setHasCheckedRegistration(true)
@@ -86,16 +101,16 @@ const App = () => {
         }
 
         if (externalNullifiers.length === 0) {
-            const ens = await semaphoreClientContract.getExternalNullifiers()
+            const ens = await getExternalNullifiers(semaphoreContract)
             setExternalNullifiers(ens)
         }
 
         let signals: any[] = []
-        const current_signal_index = (await semaphoreContract.current_signal_index()).toNumber()
+        const nextSignalIndex = (await semaphoreClientContract.getNextSignalIndex()).toNumber()
 
-        for (let i=0; i < current_signal_index; i++) {
-            const signal = await semaphoreContract.signals(i)
-            const en = await semaphoreContract.getExternalNullifierBySignalIndex(i)
+        for (let i=0; i < nextSignalIndex; i++) {
+            const signal = await semaphoreClientContract.getSignalByIndex(i)
+            const en = await semaphoreClientContract.getExternalNullifierBySignalIndex(i)
 
             signals.push({ signal, en })
         }
@@ -104,7 +119,7 @@ const App = () => {
 
     const handleRegisterBtnClick = async () => {
         const semaphoreClientContract = await getSemaphoreClientContract(context)
-        const tx = await semaphoreClientContract.insertIdentity(identityCommitment.toString())
+        const tx = await semaphoreClientContract.insertIdentityAsClient(identityCommitment.toString())
         const receipt = await tx.wait()
         console.log(receipt)
 
@@ -126,7 +141,7 @@ const App = () => {
         const semaphoreClientContract = await getSemaphoreClientContract(context)
 
         setProofStatus('Downloading leaves')
-        const leaves = await semaphoreClientContract.getLeaves()
+        const leaves = await semaphoreClientContract.getIdentityCommitments()
         console.log('Leaves:', leaves)
         setProofStatus('Downloading circuit')
         const circuitUrl = config.snarkUrls.circuit
@@ -152,23 +167,23 @@ const App = () => {
 			config.chain.semaphoreTreeDepth,
 			BigInt(en.toString()),
 		)
-
         
         const witness = result.witness
 
         setProofStatus('Generating proof')
+        console.log('Generating proof')
         const proof = await genProof(witness, provingKey)
 
         setProofStatus('Broadcasting signal')
 
         const publicSignals = genPublicSignals(witness, circuit)
-        const formatted = formatForVerifierContract(proof, publicSignals)
+        const params = genBroadcastSignalParams(result, proof, publicSignals)
         const tx = await semaphoreClientContract.broadcastSignal(
             ethers.utils.toUtf8Bytes(signal),
-            formatted.a,
-            formatted.b,
-            formatted.c,
-            formatted.input,
+            params.proof,
+            params.root,
+            params.nullifiersHash,
+			en.toString(),
 			{ gasLimit: 1000000 }
         )
 
@@ -232,7 +247,8 @@ const App = () => {
             console.log(receipt)
 
             if (receipt.status === 1) {
-                const ens = await semaphoreClientContract.getExternalNullifiers()
+                const semaphoreContract = await getSemaphoreContract(context)
+                const ens = await getExternalNullifiers(semaphoreContract)
                 setExternalNullifiers(ens)
                 // @ts-ignore
                 document.getElementById('newExternalNullifier').value = ''

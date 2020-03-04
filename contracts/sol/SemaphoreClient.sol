@@ -1,60 +1,102 @@
-pragma solidity ^0.5.11;
+/*
+ * Semaphore - Zero-knowledge signaling on Ethereum
+ * Copyright (C) 2020 Barry WhiteHat <barrywhitehat@protonmail.com>, Kobi
+ * Gurkan <kobigurk@gmail.com> and Koh Wei Jie (contact@kohweijie.com)
+ *
+ * This file is part of Semaphore.
+ *
+ * Semaphore is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Semaphore is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Semaphore.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-import { Semaphore } from "./semaphore/Semaphore.sol";
+pragma solidity ^0.5.0;
+
+import { Semaphore } from './Semaphore.sol';
 
 contract SemaphoreClient {
-    // The Semaphore contract
+    uint256[] public identityCommitments;
+
+    // A mapping of all signals broadcasted
+    mapping (uint256 => bytes) public signalIndexToSignal;
+
+    // A mapping between signal indices to external nullifiers
+    mapping (uint256 => uint256) public signalIndexToExternalNullifier;
+
+    // The next index of the `signalIndexToSignal` mapping
+    uint256 public nextSignalIndex = 0;
+
     Semaphore public semaphore;
-    constructor (address _semaphore) public {
-        semaphore = Semaphore(_semaphore);
+
+    event SignalBroadcastByClient(uint256 indexed signalIndex);
+
+    constructor(Semaphore _semaphore) public {
+        semaphore = _semaphore;
     }
 
-    /*
-     * @param _identityCommitment The Semaphore identity commitment
-     * Allows a user to register their identity into Semaphore
-     */
-    function insertIdentity(uint256 _identityCommitment) public {
-        semaphore.insertIdentity(_identityCommitment);
+    function getNextSignalIndex() public view returns (uint256) {
+        return nextSignalIndex;
     }
 
-    function addExternalNullifier(uint256 _externalNullifier) public payable {
+    function getIdentityCommitments() public view returns (uint256 [] memory) {
+        return identityCommitments;
+    }
+
+    function getIdentityCommitment(uint256 _index) public view returns (uint256) {
+        return identityCommitments[_index];
+    }
+
+    function insertIdentityAsClient(uint256 _leaf) public {
+        semaphore.insertIdentity(_leaf);
+        identityCommitments.push(_leaf);
+    }
+
+    function addExternalNullifier(uint232 _externalNullifier) public {
         semaphore.addExternalNullifier(_externalNullifier);
     }
-    /*
-     * @param _signal The signal to broadcast
-     * @param _a The pi_a zk-SNARK proof data
-     * @param _b The pi_b zk-SNARK proof data
-     * @param _c The pi_c zk-SNARK proof data
-     * @param _input The public signals to the zk-SNARK proof.
-     * Allows a registered user to anonymously broadcast a signal.
-     */
+
     function broadcastSignal(
         bytes memory _signal,
-        uint[2] memory _a,
-        uint[2][2] memory _b,
-        uint[2] memory _c,
-        uint[4] memory _input // (root, nullifiers_hash, signal_hash, external_nullifier)
+        uint256[8] memory _proof,
+        uint256 _root,
+        uint256 _nullifiersHash,
+        uint232 _externalNullifier
     ) public {
-        semaphore.broadcastSignal(
-            _signal,
-            _a,
-            _b,
-            _c,
-            _input
-        );
+        uint256 signalIndex = nextSignalIndex;
+
+        // store the signal
+        signalIndexToSignal[nextSignalIndex] = _signal;
+
+        // map the the signal index to the given external nullifier
+        signalIndexToExternalNullifier[nextSignalIndex] = _externalNullifier;
+
+        // increment the signal index
+        nextSignalIndex ++;
+
+        // broadcast the signal
+        semaphore.broadcastSignal(_signal, _proof, _root, _nullifiersHash, _externalNullifier);
+
+        emit SignalBroadcastByClient(signalIndex);
     }
 
-    function getLeaves() public view returns (uint256[] memory) { 
-        return semaphore.leaves(semaphore.id_tree_index());
+    /*
+     * Returns the external nullifier which a signal at _index broadcasted to
+     * @param _index The index to use to look up the signalIndexToExternalNullifier mapping
+     */
+    function getExternalNullifierBySignalIndex(uint256 _index) public view returns (uint256) {
+        return signalIndexToExternalNullifier[_index];
     }
 
-    function getExternalNullifiers() public view returns (uint256[] memory) {
-        uint256 max = semaphore.getNextExternalNullifierIndex();
-        uint256[] memory externalNullifiers = new uint256[](max);
-        for (uint256 i=0; i < max; i++) {
-            externalNullifiers[i] = semaphore.getExternalNullifierByIndex(i);
-        }
-
-        return externalNullifiers;
+    function getSignalByIndex(uint256 _index) public view returns (bytes memory) {
+        return signalIndexToSignal[_index];
     }
 }

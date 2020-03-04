@@ -14,9 +14,9 @@
     "author": "Koh Wei Jie",
     "dependencies": {
         "su-config": "1.0.0",
-        "ethers": "4.0.37",
-        "circomlib": "0.0.19",
-        "ganache-cli": "^6.7.0"
+        "ethers": "4.0.45",
+        "circomlib": "https://github.com/kobigurk/circomlib.git#347822604996bf25f659f96ee0f02810a1f71bb0",
+        "ganache-cli": "^6.9.1"
     },
     "devDependencies": {
         "@types/node": "^12.7.7",

@@ -78,16 +78,14 @@ const compileAndDeploy = async (
     }
 
     // copy Semaphore files
-    const semaphorePathPrefix = '../semaphore/semaphorejs/contracts/'
-    const semaphoreTargetPath = path.join(solDir, 'semaphore')
-    shell.mkdir('-p', semaphoreTargetPath)
+    const semaphorePathPrefix = '../semaphore/contracts/sol'
 
-    const semaphoreSolFiles = ['Semaphore.sol', 'MerkleTreeLib.sol', 'Ownable.sol']
+    const semaphoreSolFiles = ['Semaphore.sol', 'IncrementalMerkleTree.sol', 'Ownable.sol', 'SnarkConstants.sol', 'MiMC.sol']
     for (let file of semaphoreSolFiles) {
-        shell.cp('-f', path.join(semaphorePathPrefix, file), semaphoreTargetPath)
+        shell.cp('-f', path.join(semaphorePathPrefix, file), solDir)
     }
 
-    shell.cp('-f', path.join(semaphorePathPrefix, '../build/verifier.sol'), semaphoreTargetPath)
+    shell.cp('-f', path.join(semaphorePathPrefix, '../../circuits/build/verifier.sol'), solDir)
 
     // Build MiMC bytecode
     const mimcBin = buildMimcBytecode()
@@ -113,7 +111,7 @@ const compileAndDeploy = async (
     console.log('MiMC deployed at', mimcContract.address)
 
     // link contracts to MiMC
-    const filesToLink = ['semaphore/MerkleTreeLib.sol']
+    const filesToLink = ['MiMC.sol']
     for (let fileToLink of filesToLink) {
         const filePath = path.join(solDir, fileToLink)
         const linkCmd = `${solcCmd} --libraries ${filePath}:MiMC:${mimcContract.address}`
@@ -124,8 +122,9 @@ const compileAndDeploy = async (
     const semaphoreAB = readAbiAndBin('Semaphore')
     const semaphoreContractFactory = new ethers.ContractFactory(semaphoreAB.abi, semaphoreAB.bin, wallet)
     const semaphoreContract = await semaphoreContractFactory.deploy(
-        config.chain.semaphoreTreeDepth, 0, 0,
-        {gasPrice: ethers.utils.parseUnits('10', 'gwei')},
+        config.chain.semaphoreTreeDepth,
+        0,
+        { gasPrice: ethers.utils.parseUnits('10', 'gwei'), gasLimit: 8800000 },
     )
     await semaphoreContract.deployed()
 
